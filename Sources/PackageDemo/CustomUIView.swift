@@ -5,26 +5,19 @@
 //  Created by Mahamud Siddiquee on 6/1/25.
 //
 
-import Foundation
 import UIKit
-
-// MARK: - Delegate Protocol
-public protocol CustomUIViewDelegate: AnyObject {
-    func customUIViewButton1Tapped()
-    func customUIViewButton2Tapped()
-}
 
 public class CustomUIView: UIView {
 
-    // MARK: - Properties
-    private let titleLabel = UILabel()
-    private let button1 = UIButton(type: .system)
-    private let button2 = UIButton(type: .system)
-    private let containerView = UIView()
+    public var likeButton = UIButton(type: .system)
+    public var shareButton = UIButton(type: .system)
+    public var commentButton = UIButton(type: .system)
+    public var commentTextField = UITextField()
 
-    public weak var delegate: CustomUIViewDelegate?
+    public var onLike: (() -> Void)?
+    public var onShare: (() -> Void)?
+    public var onComment: ((_ text: String) -> Void)?
 
-    // MARK: - Initializers
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -35,139 +28,93 @@ public class CustomUIView: UIView {
         setupView()
     }
 
-    // MARK: - Setup View
     private func setupView() {
-        // Configure container view
-        containerView.backgroundColor = UIColor.darkGray
-        containerView.layer.cornerRadius = 12
-        containerView.layer.shadowOpacity = 0.5
-        containerView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        containerView.layer.shadowRadius = 10
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(containerView)
+        self.backgroundColor = .white
+        self.layer.cornerRadius = 12
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOpacity = 0.1
+        self.layer.shadowOffset = CGSize(width: 0, height: 2)
+        self.layer.shadowRadius = 6
 
-        // Configure title label
-        titleLabel.text = "Title"
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        titleLabel.textColor = .white
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.setTitle("Like", for: .normal)
+        shareButton.setTitle("Share", for: .normal)
+        commentButton.setTitle("Comment", for: .normal)
 
-        // Configure buttons
-        button1.setTitle("Button 1", for: .normal)
-        button2.setTitle("Button 2", for: .normal)
-        button1.setTitleColor(.black, for: .normal)
-        button2.setTitleColor(.black, for: .normal)
-        button1.backgroundColor = UIColor.white
-        button2.backgroundColor = UIColor.white
-        button1.layer.cornerRadius = 8
-        button2.layer.cornerRadius = 8
-        button1.translatesAutoresizingMaskIntoConstraints = false
-        button2.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        shareButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        commentButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
 
-        // Add subviews
-        containerView.addSubview(titleLabel)
-        containerView.addSubview(button1)
-        containerView.addSubview(button2)
+        likeButton.tintColor = .systemGray
+        shareButton.tintColor = .systemGray
+        commentButton.tintColor = .systemGray
+        
+        likeButton.layer.borderWidth = 1
+        shareButton.layer.borderWidth = 1
+        commentButton.layer.borderWidth = 1
+        
+        likeButton.layer.borderColor = UIColor.systemGray.cgColor
+        shareButton.layer.borderColor = UIColor.systemGray.cgColor
+        commentButton.layer.borderColor = UIColor.systemGray.cgColor
+        
+        likeButton.layer.cornerRadius = 8
+        shareButton.layer.cornerRadius = 8
+        commentButton.layer.cornerRadius = 8
 
-        // Set up constraints
+        commentTextField.placeholder = "Write a comment..."
+        commentTextField.borderStyle = .roundedRect
+        commentTextField.font = UIFont.systemFont(ofSize: 14)
+        commentTextField.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        commentTextField.returnKeyType = .done
+        commentTextField.delegate = self
+
+        let buttonStackView = UIStackView(arrangedSubviews: [likeButton, shareButton, commentButton])
+        buttonStackView.axis = .horizontal
+        buttonStackView.spacing = 16
+        buttonStackView.alignment = .center
+        buttonStackView.distribution = .fillEqually
+
+        let mainStackView = UIStackView(arrangedSubviews: [buttonStackView, commentTextField])
+        mainStackView.axis = .vertical
+        mainStackView.spacing = 12
+        mainStackView.alignment = .fill
+
+        addSubview(mainStackView)
+        mainStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: self.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 20),
-            titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-
-            button1.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            button1.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            button1.trailingAnchor.constraint(equalTo: containerView.centerXAnchor, constant: -10),
-            button1.heightAnchor.constraint(equalToConstant: 44),
-
-            button2.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            button2.leadingAnchor.constraint(equalTo: containerView.centerXAnchor, constant: 10),
-            button2.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            button2.heightAnchor.constraint(equalToConstant: 44),
+            mainStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            mainStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            mainStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
+            mainStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16)
         ])
 
-        // Add actions to buttons
-        button1.addTarget(self, action: #selector(button1Tapped), for: .touchUpInside)
-        button2.addTarget(self, action: #selector(button2Tapped), for: .touchUpInside)
+        likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
+        shareButton.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
+        commentButton.addTarget(self, action: #selector(commentTapped), for: .touchUpInside)
     }
 
-    // MARK: - Public Methods
-
-    /// Set the title of the view
-    public func setTitle(_ title: String) {
-        titleLabel.text = title
+    @objc private func likeTapped() {
+        onLike?()
     }
 
-    /// Set the titles of the buttons
-    public func setButtonTitles(_ title1: String, _ title2: String) {
-        button1.setTitle(title1, for: .normal)
-        button2.setTitle(title2, for: .normal)
+    @objc private func shareTapped() {
+        onShare?()
     }
 
-    /// Customize the background color of the container view
-    public func setContainerBackgroundColor(_ color: UIColor) {
-        containerView.backgroundColor = color
+    @objc private func commentTapped() {
+        guard let text = commentTextField.text, !text.isEmpty else { return }
+        onComment?(text)
+        commentTextField.text = ""
     }
+}
 
-    /// Customize the corner radius of the container view
-    public func setContainerCornerRadius(_ radius: CGFloat) {
-        containerView.layer.cornerRadius = radius
-    }
-
-    /// Customize the shadow properties of the container view
-    public func setContainerShadow(color: UIColor, opacity: Float, offset: CGSize, radius: CGFloat) {
-        containerView.layer.shadowColor = color.cgColor
-        containerView.layer.shadowOpacity = opacity
-        containerView.layer.shadowOffset = offset
-        containerView.layer.shadowRadius = radius
-    }
-
-    /// Customize the title label's font and text color
-    public func setTitleLabelFont(_ font: UIFont) {
-        titleLabel.font = font
-    }
-
-    public func setTitleLabelTextColor(_ color: UIColor) {
-        titleLabel.textColor = color
-    }
-
-    /// Customize button 1's properties
-    public func setButton1BackgroundColor(_ color: UIColor) {
-        button1.backgroundColor = color
-    }
-
-    public func setButton1TitleColor(_ color: UIColor, for state: UIControl.State) {
-        button1.setTitleColor(color, for: state)
-    }
-
-    public func setButton1CornerRadius(_ radius: CGFloat) {
-        button1.layer.cornerRadius = radius
-    }
-
-    /// Customize button 2's properties
-    public func setButton2BackgroundColor(_ color: UIColor) {
-        button2.backgroundColor = color
-    }
-
-    public func setButton2TitleColor(_ color: UIColor, for state: UIControl.State) {
-        button2.setTitleColor(color, for: state)
-    }
-
-    public func setButton2CornerRadius(_ radius: CGFloat) {
-        button2.layer.cornerRadius = radius
-    }
-
-    // MARK: - Button Actions
-    @objc private func button1Tapped() {
-        delegate?.customUIViewButton1Tapped()
-    }
-
-    @objc private func button2Tapped() {
-        delegate?.customUIViewButton2Tapped()
+// MARK: - UITextFieldDelegate
+extension CustomUIView: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        if let text = textField.text, !text.isEmpty {
+            onComment?(text)
+            textField.text = ""
+        }
+        return true
     }
 }
