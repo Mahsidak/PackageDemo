@@ -27,6 +27,16 @@ public class CustomUIView: UIView {
         super.init(coder: coder)
         setupView()
     }
+    
+    private func loadFromNib() {
+        let bundle = Bundle(for: type(of: self))
+        if let view = UINib(nibName: "CustomUIView", bundle: bundle).instantiate(withOwner: self, options: nil).first as? UIView {
+            view.frame = self.bounds
+            view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            addSubview(view)
+            setupView()
+        }
+    }
 
     private func setupView() {
         self.backgroundColor = .white
@@ -35,8 +45,16 @@ public class CustomUIView: UIView {
         self.layer.shadowOpacity = 0.1
         self.layer.shadowOffset = CGSize(width: 0, height: 2)
         self.layer.shadowRadius = 6
-
-        likeButton.setTitle("Like", for: .normal)
+        
+        let bundle = Bundle.module
+        
+        if let icon = UIImage(named: "like-icon", in: bundle, compatibleWith: nil) {
+            likeButton.setImage(icon, for: .normal)
+        } else {
+            print("count not load image")
+        }
+                       
+        likeButton.setTitle("", for: .normal)
         shareButton.setTitle("Share", for: .normal)
         commentButton.setTitle("Comment", for: .normal)
 
@@ -52,9 +70,9 @@ public class CustomUIView: UIView {
         shareButton.layer.borderWidth = 1
         commentButton.layer.borderWidth = 1
         
-        likeButton.layer.borderColor = UIColor.systemGray.cgColor
-        shareButton.layer.borderColor = UIColor.systemGray.cgColor
-        commentButton.layer.borderColor = UIColor.systemGray.cgColor
+        likeButton.layer.borderColor = UIColor.systemOrange.cgColor
+        shareButton.layer.borderColor = UIColor.systemOrange.cgColor
+        commentButton.layer.borderColor = UIColor.systemOrange.cgColor
         
         likeButton.layer.cornerRadius = 8
         shareButton.layer.cornerRadius = 8
@@ -75,7 +93,7 @@ public class CustomUIView: UIView {
 
         let mainStackView = UIStackView(arrangedSubviews: [buttonStackView, commentTextField])
         mainStackView.axis = .vertical
-        mainStackView.spacing = 12
+        mainStackView.spacing = 0
         mainStackView.alignment = .fill
 
         addSubview(mainStackView)
@@ -97,13 +115,28 @@ public class CustomUIView: UIView {
     }
 
     @objc private func shareTapped() {
-        onShare?()
+        let textToShare = "test text is sendable"
+        let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
+        if let viewController = self.viewController() {
+            viewController.present(activityViewController, animated: true, completion: nil)
+        }
     }
 
     @objc private func commentTapped() {
         guard let text = commentTextField.text, !text.isEmpty else { return }
         onComment?(text)
         commentTextField.text = ""
+    }
+    
+    private func viewController() -> UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder?.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
     }
 }
 
