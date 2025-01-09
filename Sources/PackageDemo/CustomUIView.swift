@@ -18,7 +18,7 @@ public class CustomUIView: UIView {
     private let commentTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Write a comment..."
-        textField.borderStyle = .roundedRect
+        textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 14)
         textField.isHidden = true
         return textField
@@ -29,6 +29,8 @@ public class CustomUIView: UIView {
         button.setImage(UIImage(systemName: "paperplane"), for: .normal)
         button.tintColor = .systemBlue
         button.isHidden = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 50).isActive = true
         return button
     }()
     
@@ -63,13 +65,16 @@ public class CustomUIView: UIView {
         buttonStackView.distribution = .fillEqually
         buttonStackView.alignment = .fill
         
+        let commentStackView = UIStackView(arrangedSubviews: [commentTextField, commentSendButton])
+        commentStackView.axis = .horizontal
+        commentStackView.distribution = .fill
+        commentStackView.alignment = .fill
+        commentStackView.spacing = 5
         addSubview(buttonStackView)
-        addSubview(commentTextField)
-        addSubview(commentSendButton)
+        addSubview(commentStackView)
         
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
-        commentTextField.translatesAutoresizingMaskIntoConstraints = false
-        commentSendButton.translatesAutoresizingMaskIntoConstraints = false
+        commentStackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             buttonStackView.topAnchor.constraint(equalTo: topAnchor),
@@ -77,15 +82,10 @@ public class CustomUIView: UIView {
             buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             buttonStackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5),
             
-            commentTextField.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8),
-            commentTextField.leadingAnchor.constraint(equalTo: leadingAnchor),
-            commentTextField.trailingAnchor.constraint(equalTo: commentSendButton.leadingAnchor, constant: -8),
-            commentTextField.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.25),
-            
-            commentSendButton.topAnchor.constraint(equalTo: commentTextField.topAnchor),
-            commentSendButton.trailingAnchor.constraint(equalTo: trailingAnchor),
-            commentSendButton.widthAnchor.constraint(equalTo: commentTextField.heightAnchor),
-            commentSendButton.heightAnchor.constraint(equalTo: commentTextField.heightAnchor)
+            commentStackView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
+            commentStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17),
+            commentStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            commentStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
     
@@ -98,7 +98,6 @@ public class CustomUIView: UIView {
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.contentHorizontalAlignment = .center
         button.imageView?.contentMode = .scaleAspectFit
-        
         return button
     }
     
@@ -114,23 +113,31 @@ public class CustomUIView: UIView {
     }
     
     @objc private func commentButtonTapped() {
-        let isHidden = commentTextField.isHidden
-        commentTextField.isHidden = !isHidden
-        commentSendButton.isHidden = !isHidden
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let isHidden = self.commentTextField.isHidden
+            self.commentTextField.isHidden = !isHidden
+            self.commentSendButton.isHidden = !isHidden
+        }
     }
     
     @objc private func shareButtonTapped() {
-        let textToShare = "Share button tapped!"
-        let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
-        if let viewController = self.viewController() {
-            viewController.present(activityViewController, animated: true, completion: nil)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let textToShare = "Share button tapped!"
+            let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
+            if let viewController = self.viewController() {
+                viewController.present(activityViewController, animated: true, completion: nil)
+            }
         }
     }
     
     @objc private func sendComment() {
-        guard let text = commentTextField.text, !text.isEmpty else { return }
-        print("Comment sent: \(text)")
-        commentTextField.text = ""
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let text = self.commentTextField.text, !text.isEmpty else { return }
+            print("Comment sent: \(text)")
+            self.commentTextField.text = ""
+        }
     }
     
     private func viewController() -> UIViewController? {
@@ -149,9 +156,11 @@ public class CustomUIView: UIView {
 @available(iOS 13.0, *)
 extension CustomUIView: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        if let text = textField.text, !text.isEmpty {
-            textField.text = ""
+        DispatchQueue.main.async {
+            textField.resignFirstResponder()
+            if let text = textField.text, !text.isEmpty {
+                textField.text = ""
+            }
         }
         return true
     }
