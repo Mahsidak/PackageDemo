@@ -45,39 +45,13 @@ public class CustomUIView: UIView {
         self.layer.shadowOpacity = 0.1
         self.layer.shadowOffset = CGSize(width: 0, height: 2)
         self.layer.shadowRadius = 6
-        
+
         let bundle = Bundle.module
         
-        if let icon = UIImage(named: "like-icon", in: bundle, compatibleWith: nil) {
-            likeButton.setImage(icon, for: .normal)
-        } else {
-            print("count not load image")
-        }
-                       
-        likeButton.setTitle("", for: .normal)
-        shareButton.setTitle("Share", for: .normal)
-        commentButton.setTitle("Comment", for: .normal)
-
-        likeButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        shareButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        commentButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-
-        likeButton.tintColor = .systemGray
-        shareButton.tintColor = .systemGray
-        commentButton.tintColor = .systemGray
+        configureButton(likeButton, title: "Like", imageName: "like-icon", bundle: bundle, tintColor: .systemOrange)
+        configureButton(shareButton, title: "Share", imageName: "share-icon", bundle: bundle, tintColor: .systemOrange)
+        configureButton(commentButton, title: "Comment", imageName: "comment-icon", bundle: bundle, tintColor: .systemOrange)
         
-        likeButton.layer.borderWidth = 1
-        shareButton.layer.borderWidth = 1
-        commentButton.layer.borderWidth = 1
-        
-        likeButton.layer.borderColor = UIColor.systemOrange.cgColor
-        shareButton.layer.borderColor = UIColor.systemOrange.cgColor
-        commentButton.layer.borderColor = UIColor.systemOrange.cgColor
-        
-        likeButton.layer.cornerRadius = 8
-        shareButton.layer.cornerRadius = 8
-        commentButton.layer.cornerRadius = 8
-
         commentTextField.placeholder = "Write a comment..."
         commentTextField.borderStyle = .roundedRect
         commentTextField.font = UIFont.systemFont(ofSize: 14)
@@ -87,9 +61,9 @@ public class CustomUIView: UIView {
 
         let buttonStackView = UIStackView(arrangedSubviews: [likeButton, shareButton, commentButton])
         buttonStackView.axis = .horizontal
-        buttonStackView.spacing = 16
+        buttonStackView.spacing = 0
         buttonStackView.alignment = .center
-        buttonStackView.distribution = .fillEqually
+        buttonStackView.distribution = .fillProportionally
 
         let mainStackView = UIStackView(arrangedSubviews: [buttonStackView, commentTextField])
         mainStackView.axis = .vertical
@@ -108,6 +82,35 @@ public class CustomUIView: UIView {
         likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
         shareButton.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
         commentButton.addTarget(self, action: #selector(commentTapped), for: .touchUpInside)
+    }
+
+    /// Generic function to configure a UIButton
+    private func configureButton(
+        _ button: UIButton,
+        title: String,
+        imageName: String,
+        bundle: Bundle,
+        tintColor: UIColor
+    ) {
+        let resizedImage = UIImage(named: imageName, in: bundle, compatibleWith: nil)?
+            .resized(to: CGSize(width: 24, height: 24))?
+            .withColor(.systemGreen)
+        button.setImage(resizedImage, for: .normal)
+        
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.tintColor = tintColor
+
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
+
+//        button.layer.borderColor = tintColor.cgColor
+//        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 8
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
+
     }
 
     @objc private func likeTapped() {
