@@ -7,25 +7,42 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 public class CustomUIView: UIView {
-
-    public var likeButton = UIButton(type: .system)
-    public var shareButton = UIButton(type: .system)
-    public var commentButton = UIButton(type: .system)
-    public var commentTextField = UITextField()
-
-    public var onLike: (() -> Void)?
-    public var onShare: (() -> Void)?
-    public var onComment: ((_ text: String) -> Void)?
-
+    
+    // MARK: - UI Elements
+    private lazy var likeButton: UIButton = createButton(imageName: "hand.thumbsup", title: " Like")
+    private lazy var commentButton: UIButton = createButton(imageName: "text.bubble", title: " Comment")
+    private lazy var shareButton: UIButton = createButton(imageName: "arrowshape.turn.up.forward", title: " Share")
+    
+    private let commentTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Write a comment..."
+        textField.borderStyle = .roundedRect
+        textField.font = UIFont.systemFont(ofSize: 14)
+        textField.isHidden = true
+        return textField
+    }()
+    
+    private let commentSendButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "paperplane"), for: .normal)
+        button.tintColor = .systemBlue
+        button.isHidden = true
+        return button
+    }()
+    
+    // MARK: - Initialization
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
+        setupUI()
+        setupActions()
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupView()
+        setupUI()
+        setupActions()
     }
     
     private func loadFromNib() {
@@ -34,100 +51,85 @@ public class CustomUIView: UIView {
             view.frame = self.bounds
             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             addSubview(view)
-            setupView()
+            setupUI()
+            setupActions()
         }
     }
-
-    private func setupView() {
-        self.backgroundColor = .white
-        self.layer.cornerRadius = 12
-        self.layer.shadowColor = UIColor.black.cgColor
-        self.layer.shadowOpacity = 0.1
-        self.layer.shadowOffset = CGSize(width: 0, height: 2)
-        self.layer.shadowRadius = 6
-
-        let bundle = Bundle.module
-        
-        configureButton(likeButton, title: "Like", imageName: "like-icon", bundle: bundle, tintColor: .systemOrange)
-        configureButton(shareButton, title: "Share", imageName: "share-icon", bundle: bundle, tintColor: .systemOrange)
-        configureButton(commentButton, title: "Comment", imageName: "comment-icon", bundle: bundle, tintColor: .systemOrange)
-        
-        commentTextField.placeholder = "Write a comment..."
-        commentTextField.borderStyle = .roundedRect
-        commentTextField.font = UIFont.systemFont(ofSize: 14)
-        commentTextField.backgroundColor = UIColor(white: 0.95, alpha: 1)
-        commentTextField.returnKeyType = .done
-        commentTextField.delegate = self
-
-        let buttonStackView = UIStackView(arrangedSubviews: [likeButton, shareButton, commentButton])
+    
+    // MARK: - Setup UI
+    private func setupUI() {
+        let buttonStackView = UIStackView(arrangedSubviews: [likeButton, commentButton, shareButton])
         buttonStackView.axis = .horizontal
-        buttonStackView.spacing = 0
-        buttonStackView.alignment = .center
-        buttonStackView.distribution = .fillProportionally
-
-        let mainStackView = UIStackView(arrangedSubviews: [buttonStackView, commentTextField])
-        mainStackView.axis = .vertical
-        mainStackView.spacing = 0
-        mainStackView.alignment = .fill
-
-        addSubview(mainStackView)
-        mainStackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mainStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            mainStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-            mainStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 16),
-            mainStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -16)
-        ])
-
-        likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
-        shareButton.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
-        commentButton.addTarget(self, action: #selector(commentTapped), for: .touchUpInside)
-    }
-
-    /// Generic function to configure a UIButton
-    private func configureButton(
-        _ button: UIButton,
-        title: String,
-        imageName: String,
-        bundle: Bundle,
-        tintColor: UIColor
-    ) {
-        let resizedImage = UIImage(named: imageName, in: bundle, compatibleWith: nil)?
-            .resized(to: CGSize(width: 24, height: 24))?
-            .withColor(.systemGreen)
-        button.setImage(resizedImage, for: .normal)
+        buttonStackView.distribution = .fillEqually
+        buttonStackView.alignment = .fill
         
+        addSubview(buttonStackView)
+        addSubview(commentTextField)
+        addSubview(commentSendButton)
+        
+        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
+        commentTextField.translatesAutoresizingMaskIntoConstraints = false
+        commentSendButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            buttonStackView.topAnchor.constraint(equalTo: topAnchor),
+            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            buttonStackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5),
+            
+            commentTextField.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor, constant: 8),
+            commentTextField.leadingAnchor.constraint(equalTo: leadingAnchor),
+            commentTextField.trailingAnchor.constraint(equalTo: commentSendButton.leadingAnchor, constant: -8),
+            commentTextField.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.25),
+            
+            commentSendButton.topAnchor.constraint(equalTo: commentTextField.topAnchor),
+            commentSendButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            commentSendButton.widthAnchor.constraint(equalTo: commentTextField.heightAnchor),
+            commentSendButton.heightAnchor.constraint(equalTo: commentTextField.heightAnchor)
+        ])
+    }
+    
+    private func createButton(imageName: String, title: String) -> UIButton {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: imageName), for: .normal)
         button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.tintColor = tintColor
-
-        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
-
-//        button.layer.borderColor = tintColor.cgColor
-//        button.layer.borderWidth = 1
-        button.layer.cornerRadius = 8
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.contentHorizontalAlignment = .center
-        button.contentVerticalAlignment = .center
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
-
+        button.imageView?.contentMode = .scaleAspectFit
+        
+        return button
     }
-
-    @objc private func likeTapped() {
-        onLike?()
+    
+    private func setupActions() {
+        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+        commentButton.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
+        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        commentSendButton.addTarget(self, action: #selector(sendComment), for: .touchUpInside)
     }
-
-    @objc private func shareTapped() {
-        let textToShare = "test text is sendable"
+    
+    @objc private func likeButtonTapped() {
+        print("Like button tapped")
+    }
+    
+    @objc private func commentButtonTapped() {
+        let isHidden = commentTextField.isHidden
+        commentTextField.isHidden = !isHidden
+        commentSendButton.isHidden = !isHidden
+    }
+    
+    @objc private func shareButtonTapped() {
+        let textToShare = "Share button tapped!"
         let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
         if let viewController = self.viewController() {
             viewController.present(activityViewController, animated: true, completion: nil)
         }
     }
-
-    @objc private func commentTapped() {
+    
+    @objc private func sendComment() {
         guard let text = commentTextField.text, !text.isEmpty else { return }
-        onComment?(text)
+        print("Comment sent: \(text)")
         commentTextField.text = ""
     }
     
@@ -144,11 +146,11 @@ public class CustomUIView: UIView {
 }
 
 // MARK: - UITextFieldDelegate
+@available(iOS 13.0, *)
 extension CustomUIView: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         if let text = textField.text, !text.isEmpty {
-            onComment?(text)
             textField.text = ""
         }
         return true
