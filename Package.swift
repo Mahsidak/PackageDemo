@@ -13,7 +13,7 @@ let package = Package(
         .target(
             name: "PackageDemo",
             resources: [
-                .process("Asset")
+                .process("Asset"),
             ]
         ),
     ]

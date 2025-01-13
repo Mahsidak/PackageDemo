@@ -9,7 +9,6 @@ import UIKit
 
 @available(iOS 13.0, *)
 public class CustomUIView: UIView {
-    
     // MARK: - UI Elements
     private lazy var likeButton: UIButton = createButton(imageName: "hand.thumbsup", title: " Like")
     private lazy var commentButton: UIButton = createButton(imageName: "text.bubble", title: " Comment")
@@ -36,12 +35,12 @@ public class CustomUIView: UIView {
     
     private lazy var commentTableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(UINib(nibName: "CommentTableViewCell", bundle: .module), forCellReuseIdentifier: "CommentTableViewCell")
         tableView.isHidden = false
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
-    }
+        return tableView
+    }()
     
     // MARK: - Initialization
     public override init(frame: CGRect) {
@@ -64,16 +63,23 @@ public class CustomUIView: UIView {
             addSubview(view)
             setupUI()
             setupActions()
+//            let nib = UINib(nibName: "CommentTableViewCell", bundle: nil)
+//            commentTableView.register(nib, forCellReuseIdentifier: "CommentTableViewCell")
         }
     }
     
     // MARK: - Setup UI
     private func setupUI() {
+        commentTableView.register(CommentTableViewCell.self, forCellReuseIdentifier: "CommentTableViewCell")
+        commentTableView.separatorStyle = .none
+        
         let buttonStackView = UIStackView(arrangedSubviews: [likeButton, commentButton, shareButton])
         buttonStackView.axis = .horizontal
         buttonStackView.distribution = .fillEqually
         buttonStackView.alignment = .fill
         
+        commentTableView.delegate = self
+        commentTableView.dataSource = self
 //        let commentStackView = UIStackView(arrangedSubviews: [commentTextField, commentSendButton])
 //        commentStackView.axis = .horizontal
 //        commentStackView.distribution = .fill
@@ -81,6 +87,7 @@ public class CustomUIView: UIView {
 //        commentStackView.spacing = 5
         addSubview(buttonStackView)
 //        addSubview(commentStackView)
+        addSubview(commentTableView)
         
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
 //        commentStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -91,6 +98,10 @@ public class CustomUIView: UIView {
             buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             buttonStackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5),
             
+            commentTableView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
+            commentTableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            commentTableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            commentTableView.bottomAnchor.constraint(equalTo: bottomAnchor),
 //            commentStackView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
 //            commentStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17),
 //            commentStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -160,6 +171,24 @@ public class CustomUIView: UIView {
             self.commentTextField.text = ""
         }
     }
+}
+
+@available(iOS 13.0, *)
+extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        3
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentTableViewCell") as? CommentTableViewCell else {
+            print("can't find ManageAccountEmptyTableViewCell")
+            return UITableViewCell()
+        }
+        cell.selectionStyle = .none
+        cell.configure(profileImage: nil, profileName: "Steve Rogers", commentText: "This pack is great! fr")
+        return cell
+    }
+
 }
 
 // MARK: - UITextFieldDelegate

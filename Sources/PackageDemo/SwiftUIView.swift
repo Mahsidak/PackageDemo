@@ -14,7 +14,7 @@ struct SwiftUIView: View {
             Text("This is a SwiftUI view")
                 .font(.headline)
             CustomUIViewWrapper()
-                .frame(height: 150)
+                .frame(height: 500)
                 .background(Color.gray.opacity(0.2))
         }
         .padding()
