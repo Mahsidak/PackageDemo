@@ -15,7 +15,7 @@ public class CustomUIView: UIView {
     private lazy var commentButton: UIButton = createButton(imageName: "text.bubble", title: " Comment")
     private lazy var shareButton: UIButton = createButton(imageName: "arrowshape.turn.up.forward", title: " Share")
     
-    private let commentTextField: UITextField = {
+    private lazy var commentTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Write a comment..."
         textField.borderStyle = .none
@@ -24,7 +24,7 @@ public class CustomUIView: UIView {
         return textField
     }()
     
-    private let commentSendButton: UIButton = {
+    private lazy var commentSendButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "paperplane"), for: .normal)
         button.tintColor = .systemBlue
@@ -33,6 +33,15 @@ public class CustomUIView: UIView {
         button.widthAnchor.constraint(equalToConstant: 50).isActive = true
         return button
     }()
+    
+    private lazy var commentTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(UINib(nibName: "CommentTableViewCell", bundle: .module), forCellReuseIdentifier: "CommentTableViewCell")
+        tableView.isHidden = false
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+    }
     
     // MARK: - Initialization
     public override init(frame: CGRect) {
@@ -65,16 +74,16 @@ public class CustomUIView: UIView {
         buttonStackView.distribution = .fillEqually
         buttonStackView.alignment = .fill
         
-        let commentStackView = UIStackView(arrangedSubviews: [commentTextField, commentSendButton])
-        commentStackView.axis = .horizontal
-        commentStackView.distribution = .fill
-        commentStackView.alignment = .fill
-        commentStackView.spacing = 5
+//        let commentStackView = UIStackView(arrangedSubviews: [commentTextField, commentSendButton])
+//        commentStackView.axis = .horizontal
+//        commentStackView.distribution = .fill
+//        commentStackView.alignment = .fill
+//        commentStackView.spacing = 5
         addSubview(buttonStackView)
-        addSubview(commentStackView)
+//        addSubview(commentStackView)
         
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
-        commentStackView.translatesAutoresizingMaskIntoConstraints = false
+//        commentStackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             buttonStackView.topAnchor.constraint(equalTo: topAnchor),
@@ -82,10 +91,10 @@ public class CustomUIView: UIView {
             buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             buttonStackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5),
             
-            commentStackView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
-            commentStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17),
-            commentStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            commentStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+//            commentStackView.topAnchor.constraint(equalTo: buttonStackView.bottomAnchor),
+//            commentStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17),
+//            commentStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
+//            commentStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
     
@@ -101,6 +110,18 @@ public class CustomUIView: UIView {
         return button
     }
     
+    private func viewController() -> UIViewController? {
+        var parentResponder: UIResponder? = self
+        while parentResponder != nil {
+            parentResponder = parentResponder?.next
+            if let viewController = parentResponder as? UIViewController {
+                return viewController
+            }
+        }
+        return nil
+    }
+    
+    //MARK: Configure Actions
     private func setupActions() {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         commentButton.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
@@ -138,17 +159,6 @@ public class CustomUIView: UIView {
             print("Comment sent: \(text)")
             self.commentTextField.text = ""
         }
-    }
-    
-    private func viewController() -> UIViewController? {
-        var parentResponder: UIResponder? = self
-        while parentResponder != nil {
-            parentResponder = parentResponder?.next
-            if let viewController = parentResponder as? UIViewController {
-                return viewController
-            }
-        }
-        return nil
     }
 }
 
