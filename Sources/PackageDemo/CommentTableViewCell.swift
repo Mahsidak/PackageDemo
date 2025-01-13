@@ -7,15 +7,15 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 class CommentTableViewCell: UITableViewCell {
-
-    // UI Elements
-    let profilePictureImageView = UIImageView()
-    let commentHolderView = UIView()
-    let profileNameLabel = UILabel()
-    let commentLabel = UILabel()
-
-    // Initialization
+    
+    private lazy var mainView = UIView()
+    private lazy var profilePictureImageView = UIImageView()
+    private lazy var commentHolderView = UIView()
+    private lazy var profileNameLabel = UILabel()
+    private lazy var commentLabel = UILabel()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -25,64 +25,65 @@ class CommentTableViewCell: UITableViewCell {
         super.init(coder: coder)
         setupUI()
     }
-
+    
     private func setupUI() {
-        // Set the profile picture image view
+        contentView.backgroundColor = UIColor.clear
+        self.separatorInset = UIEdgeInsets(top: 0, left: contentView.bounds.size.width, bottom: 0, right: 0)
+        mainView.backgroundColor = UIColor.systemBackground
+        mainView.translatesAutoresizingMaskIntoConstraints = false
+        mainView.clipsToBounds = true
+        contentView.addSubview(mainView)
+
         profilePictureImageView.translatesAutoresizingMaskIntoConstraints = false
         profilePictureImageView.contentMode = .scaleAspectFit
         profilePictureImageView.clipsToBounds = true
-        contentView.addSubview(profilePictureImageView)
+        mainView.addSubview(profilePictureImageView)
         
-        // Set the comment holder view
         commentHolderView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 13.0, *) {
-            commentHolderView.backgroundColor = UIColor.systemGray3
-        } else {
-            // Fallback on earlier versions
-        }
-        contentView.addSubview(commentHolderView)
+        commentHolderView.backgroundColor = UIColor.systemGray3
+        mainView.addSubview(commentHolderView)
         
-        // Set the profile name label
         profileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         profileNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         profileNameLabel.numberOfLines = 1
         commentHolderView.addSubview(profileNameLabel)
         
-        // Set the comment label
         commentLabel.translatesAutoresizingMaskIntoConstraints = false
         commentLabel.font = UIFont.systemFont(ofSize: 12)
         commentLabel.numberOfLines = 0
         commentHolderView.addSubview(commentLabel)
         
-        // Set up constraints
         setupConstraints()
     }
     
     private func setupConstraints() {
-        // Profile Picture Image View Constraints
         NSLayoutConstraint.activate([
-            profilePictureImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            profilePictureImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            profilePictureImageView.widthAnchor.constraint(equalToConstant: 24),
-            profilePictureImageView.heightAnchor.constraint(equalToConstant: 24)
+            mainView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            mainView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            mainView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            mainView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        // Comment Holder View Constraints
+        NSLayoutConstraint.activate([
+            profilePictureImageView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 10),
+            profilePictureImageView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 10),
+            profilePictureImageView.widthAnchor.constraint(equalToConstant: 50),
+            profilePictureImageView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        
         NSLayoutConstraint.activate([
             commentHolderView.leadingAnchor.constraint(equalTo: profilePictureImageView.trailingAnchor, constant: 5),
-            commentHolderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            commentHolderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            commentHolderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
+            commentHolderView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 10),
+            commentHolderView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -10),
+            commentHolderView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -5)
         ])
         
-        // Profile Name Label Constraints
         NSLayoutConstraint.activate([
-            profileNameLabel.leadingAnchor.constraint(equalTo: commentHolderView.leadingAnchor, constant: 5),
+            profileNameLabel.leadingAnchor.constraint(equalTo: commentHolderView.leadingAnchor, constant: 7),
             profileNameLabel.topAnchor.constraint(equalTo: commentHolderView.topAnchor, constant: 7),
-            profileNameLabel.trailingAnchor.constraint(equalTo: commentHolderView.trailingAnchor, constant: -5)
+            profileNameLabel.trailingAnchor.constraint(equalTo: commentHolderView.trailingAnchor, constant: -7)
         ])
         
-        // Comment Label Constraints
         NSLayoutConstraint.activate([
             commentLabel.leadingAnchor.constraint(equalTo: profileNameLabel.leadingAnchor),
             commentLabel.topAnchor.constraint(equalTo: profileNameLabel.bottomAnchor, constant: 3),
@@ -91,7 +92,6 @@ class CommentTableViewCell: UITableViewCell {
         ])
     }
     
-    // Configure the cell with data
     func configure(profileImage: UIImage?, profileName: String, commentText: String) {
         profilePictureImageView.layer.cornerRadius = profilePictureImageView.frame.height / 2
         commentHolderView.layer.cornerRadius = 10

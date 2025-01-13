@@ -36,9 +36,9 @@ public class CustomUIView: UIView {
     private lazy var commentTableView: UITableView = {
         let tableView = UITableView()
         tableView.isHidden = false
-        tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.tableFooterView = UIView()
         return tableView
     }()
     
@@ -55,31 +55,18 @@ public class CustomUIView: UIView {
         setupActions()
     }
     
-    private func loadFromNib() {
-        let bundle = Bundle(for: type(of: self))
-        if let view = UINib(nibName: "CustomUIView", bundle: bundle).instantiate(withOwner: self, options: nil).first as? UIView {
-            view.frame = self.bounds
-            view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            addSubview(view)
-            setupUI()
-            setupActions()
-//            let nib = UINib(nibName: "CommentTableViewCell", bundle: nil)
-//            commentTableView.register(nib, forCellReuseIdentifier: "CommentTableViewCell")
-        }
-    }
-    
     // MARK: - Setup UI
     private func setupUI() {
         commentTableView.register(CommentTableViewCell.self, forCellReuseIdentifier: "CommentTableViewCell")
-        commentTableView.separatorStyle = .none
+        commentTableView.delegate = self
+        commentTableView.dataSource = self
+        print("Separator Style: \(commentTableView.separatorStyle)")
         
         let buttonStackView = UIStackView(arrangedSubviews: [likeButton, commentButton, shareButton])
         buttonStackView.axis = .horizontal
         buttonStackView.distribution = .fillEqually
         buttonStackView.alignment = .fill
         
-        commentTableView.delegate = self
-        commentTableView.dataSource = self
 //        let commentStackView = UIStackView(arrangedSubviews: [commentTextField, commentSendButton])
 //        commentStackView.axis = .horizontal
 //        commentStackView.distribution = .fill
@@ -180,8 +167,8 @@ extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentTableViewCell") as? CommentTableViewCell else {
-            print("can't find ManageAccountEmptyTableViewCell")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentTableViewCell", for: indexPath) as? CommentTableViewCell else {
+            print("can't find CommentTableViewCell")
             return UITableViewCell()
         }
         cell.selectionStyle = .none
