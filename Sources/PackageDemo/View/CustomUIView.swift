@@ -19,6 +19,8 @@ public class CustomUIView: UIView {
     private lazy var commentSendButton: UIButton = UIButton()
     private lazy var commentInputStackView = UIStackView()
     
+    private var comments = [["Steve Rogers": "What a pack!!"],["Tony Stark": "good good good good good good good good good good good good good good good good good good good good"],["Dr Bruce": "Hes lost fr"],["Clint Barton": "I got this pack. speed was okaish"],["Natasha Romarof": "Man! Everytime i browse google it slows down for me. idk why"]]
+    
     // MARK: - Initialization
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -166,7 +168,7 @@ public class CustomUIView: UIView {
 @available(iOS 13.0, *)
 extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        comments.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -176,7 +178,7 @@ extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
         }
         cell.selectionStyle = .none
         let profilePicture = UIImage(named: "profile-avatar.jpg", in: Bundle.module, compatibleWith: nil)
-        cell.configure(profileImage: profilePicture, profileName: "Steve Rogers", commentText: "This pack is great! fr")
+        cell.configure(profileImage: profilePicture, profileName: comments[indexPath.row].keys.first ?? "", commentText: comments[indexPath.row].values.first ?? "")
         return cell
     }
 }

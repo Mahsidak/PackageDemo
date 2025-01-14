@@ -50,9 +50,13 @@ class CommentTableViewCell: UITableViewCell {
     }
 
     private func configureMainView() {
+        mainView.addSubview(profilePictureImageView)
+        mainView.addSubview(commentHolderView)
+        
         mainView.backgroundColor = .systemBackground
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.clipsToBounds = true
+        
         contentView.addSubview(mainView)
         
         NSLayoutConstraint.activate([
@@ -67,7 +71,6 @@ class CommentTableViewCell: UITableViewCell {
         profilePictureImageView.translatesAutoresizingMaskIntoConstraints = false
         profilePictureImageView.contentMode = .scaleAspectFill
         profilePictureImageView.clipsToBounds = true
-        mainView.addSubview(profilePictureImageView)
         
         NSLayoutConstraint.activate([
             profilePictureImageView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 10),
@@ -80,10 +83,12 @@ class CommentTableViewCell: UITableViewCell {
     }
 
     private func configureCommentHolderView() {
+        commentHolderView.addSubview(profileNameLabel)
+        commentHolderView.addSubview(commentLabel)
+        
         commentHolderView.translatesAutoresizingMaskIntoConstraints = false
         commentHolderView.backgroundColor = .systemGray3
         commentHolderView.layer.cornerRadius = 10
-        mainView.addSubview(commentHolderView)
         
         NSLayoutConstraint.activate([
             commentHolderView.leadingAnchor.constraint(equalTo: profilePictureImageView.trailingAnchor, constant: 5),
@@ -97,7 +102,6 @@ class CommentTableViewCell: UITableViewCell {
         profileNameLabel.translatesAutoresizingMaskIntoConstraints = false
         profileNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         profileNameLabel.numberOfLines = 1
-        commentHolderView.addSubview(profileNameLabel)
         
         NSLayoutConstraint.activate([
             profileNameLabel.leadingAnchor.constraint(equalTo: commentHolderView.leadingAnchor, constant: 7),
@@ -110,7 +114,6 @@ class CommentTableViewCell: UITableViewCell {
         commentLabel.translatesAutoresizingMaskIntoConstraints = false
         commentLabel.font = UIFont.systemFont(ofSize: 12)
         commentLabel.numberOfLines = 0
-        commentHolderView.addSubview(commentLabel)
         
         NSLayoutConstraint.activate([
             commentLabel.leadingAnchor.constraint(equalTo: profileNameLabel.leadingAnchor),
