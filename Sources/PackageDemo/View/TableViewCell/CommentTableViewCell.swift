@@ -9,13 +9,14 @@ import UIKit
 
 @available(iOS 13.0, *)
 class CommentTableViewCell: UITableViewCell {
-    
+    //MARK: Variables
     private lazy var mainView = UIView()
     private lazy var profilePictureImageView = UIImageView()
     private lazy var commentHolderView = UIView()
     private lazy var profileNameLabel = UILabel()
     private lazy var commentLabel = UILabel()
     
+    //MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -26,50 +27,63 @@ class CommentTableViewCell: UITableViewCell {
         setupUI()
     }
     
+    func configure(profileImage: UIImage?, profileName: String, commentText: String) {
+        profilePictureImageView.image = profileImage
+        profileNameLabel.text = profileName
+        commentLabel.text = commentText
+    }
+    
+    //MARK: Setup UI
     private func setupUI() {
-        contentView.backgroundColor = UIColor.clear
-        self.separatorInset = UIEdgeInsets(top: 0, left: contentView.bounds.size.width, bottom: 0, right: 0)
-        mainView.backgroundColor = UIColor.systemBackground
+        configureContentView()
+        configureMainView()
+        configureProfilePictureImageView()
+        configureCommentHolderView()
+        configureProfileNameLabel()
+        configureCommentLabel()
+    }
+
+    private func configureContentView() {
+        contentView.backgroundColor = .clear
+        contentView.layoutIfNeeded()
+        separatorInset = UIEdgeInsets(top: 0, left: contentView.bounds.width * 2, bottom: 0, right: 0)
+    }
+
+    private func configureMainView() {
+        mainView.backgroundColor = .systemBackground
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.clipsToBounds = true
         contentView.addSubview(mainView)
-
-        profilePictureImageView.translatesAutoresizingMaskIntoConstraints = false
-        profilePictureImageView.contentMode = .scaleAspectFit
-        profilePictureImageView.clipsToBounds = true
-        mainView.addSubview(profilePictureImageView)
         
-        commentHolderView.translatesAutoresizingMaskIntoConstraints = false
-        commentHolderView.backgroundColor = UIColor.systemGray3
-        mainView.addSubview(commentHolderView)
-        
-        profileNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        profileNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        profileNameLabel.numberOfLines = 1
-        commentHolderView.addSubview(profileNameLabel)
-        
-        commentLabel.translatesAutoresizingMaskIntoConstraints = false
-        commentLabel.font = UIFont.systemFont(ofSize: 12)
-        commentLabel.numberOfLines = 0
-        commentHolderView.addSubview(commentLabel)
-        
-        setupConstraints()
-    }
-    
-    private func setupConstraints() {
         NSLayoutConstraint.activate([
             mainView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             mainView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             mainView.topAnchor.constraint(equalTo: contentView.topAnchor),
             mainView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+    }
+
+    private func configureProfilePictureImageView() {
+        profilePictureImageView.translatesAutoresizingMaskIntoConstraints = false
+        profilePictureImageView.contentMode = .scaleAspectFill
+        profilePictureImageView.clipsToBounds = true
+        mainView.addSubview(profilePictureImageView)
         
         NSLayoutConstraint.activate([
             profilePictureImageView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 10),
             profilePictureImageView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 10),
-            profilePictureImageView.widthAnchor.constraint(equalToConstant: 50),
-            profilePictureImageView.heightAnchor.constraint(equalToConstant: 50)
+            profilePictureImageView.widthAnchor.constraint(equalToConstant: 30),
+            profilePictureImageView.heightAnchor.constraint(equalToConstant: 30)
         ])
+        profilePictureImageView.layoutIfNeeded()
+        profilePictureImageView.layer.cornerRadius = profilePictureImageView.bounds.height / 2
+    }
+
+    private func configureCommentHolderView() {
+        commentHolderView.translatesAutoresizingMaskIntoConstraints = false
+        commentHolderView.backgroundColor = .systemGray3
+        commentHolderView.layer.cornerRadius = 10
+        mainView.addSubview(commentHolderView)
         
         NSLayoutConstraint.activate([
             commentHolderView.leadingAnchor.constraint(equalTo: profilePictureImageView.trailingAnchor, constant: 5),
@@ -77,12 +91,26 @@ class CommentTableViewCell: UITableViewCell {
             commentHolderView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -10),
             commentHolderView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -5)
         ])
+    }
+
+    private func configureProfileNameLabel() {
+        profileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        profileNameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        profileNameLabel.numberOfLines = 1
+        commentHolderView.addSubview(profileNameLabel)
         
         NSLayoutConstraint.activate([
             profileNameLabel.leadingAnchor.constraint(equalTo: commentHolderView.leadingAnchor, constant: 7),
             profileNameLabel.topAnchor.constraint(equalTo: commentHolderView.topAnchor, constant: 7),
             profileNameLabel.trailingAnchor.constraint(equalTo: commentHolderView.trailingAnchor, constant: -7)
         ])
+    }
+
+    private func configureCommentLabel() {
+        commentLabel.translatesAutoresizingMaskIntoConstraints = false
+        commentLabel.font = UIFont.systemFont(ofSize: 12)
+        commentLabel.numberOfLines = 0
+        commentHolderView.addSubview(commentLabel)
         
         NSLayoutConstraint.activate([
             commentLabel.leadingAnchor.constraint(equalTo: profileNameLabel.leadingAnchor),
@@ -92,11 +120,4 @@ class CommentTableViewCell: UITableViewCell {
         ])
     }
     
-    func configure(profileImage: UIImage?, profileName: String, commentText: String) {
-        profilePictureImageView.layer.cornerRadius = profilePictureImageView.frame.height / 2
-        commentHolderView.layer.cornerRadius = 10
-        profilePictureImageView.image = profileImage
-        profileNameLabel.text = profileName
-        commentLabel.text = commentText
-    }
 }

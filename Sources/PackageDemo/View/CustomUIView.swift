@@ -60,7 +60,6 @@ public class CustomUIView: UIView {
         commentTableView.register(CommentTableViewCell.self, forCellReuseIdentifier: "CommentTableViewCell")
         commentTableView.delegate = self
         commentTableView.dataSource = self
-        print("Separator Style: \(commentTableView.separatorStyle)")
         
         let buttonStackView = UIStackView(arrangedSubviews: [likeButton, commentButton, shareButton])
         buttonStackView.axis = .horizontal
@@ -160,6 +159,7 @@ public class CustomUIView: UIView {
     }
 }
 
+// MARK: - UITableViewDelegate
 @available(iOS 13.0, *)
 extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -172,7 +172,8 @@ extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
-        cell.configure(profileImage: nil, profileName: "Steve Rogers", commentText: "This pack is great! fr")
+        let profilePicture = UIImage(named: "profile-avatar.jpg", in: Bundle.module, compatibleWith: nil)
+        cell.configure(profileImage: profilePicture, profileName: "Steve Rogers", commentText: "This pack is great! fr")
         return cell
     }
 
