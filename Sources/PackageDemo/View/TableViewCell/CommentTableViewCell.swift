@@ -71,7 +71,7 @@ class CommentTableViewCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             profilePictureImageView.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 10),
-            profilePictureImageView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 10),
+            profilePictureImageView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 0),
             profilePictureImageView.widthAnchor.constraint(equalToConstant: 30),
             profilePictureImageView.heightAnchor.constraint(equalToConstant: 30)
         ])
@@ -87,7 +87,7 @@ class CommentTableViewCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             commentHolderView.leadingAnchor.constraint(equalTo: profilePictureImageView.trailingAnchor, constant: 5),
-            commentHolderView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 10),
+            commentHolderView.topAnchor.constraint(equalTo: profilePictureImageView.topAnchor),
             commentHolderView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -10),
             commentHolderView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -5)
         ])
