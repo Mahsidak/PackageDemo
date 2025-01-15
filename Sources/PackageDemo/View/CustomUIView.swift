@@ -10,64 +10,53 @@ import UIKit
 @available(iOS 13.0, *)
 public class CustomUIView: UIView {
     // MARK: - UI Elements
-    private lazy var likeButton: UIButton = createButton(imageName: "hand.thumbsup", title: " Like")
-    private lazy var commentButton: UIButton = createButton(imageName: "text.bubble", title: " Comment")
-    private lazy var shareButton: UIButton = createButton(imageName: "arrowshape.turn.up.forward", title: " Share")
-    private lazy var buttonStackView = UIStackView()
+    private lazy var buttonStackView = LikeCommentShareStackView()
     private lazy var commentTableView: UITableView = UITableView()
     private lazy var commentTextField = UITextField()
     private lazy var commentSendButton: UIButton = UIButton()
     private lazy var commentInputStackView = UIStackView()
+    private lazy var countView = CountView()
     
-    private var comments = [["Steve Rogers": "What a pack!!"],["Tony Stark": "good good good good good good good good good good good good good good good good good good good good"],["Dr Bruce": "Hes lost fr"],["Clint Barton": "I got this pack. speed was okaish"],["Natasha Romarof": "Man! Everytime i browse google it slows down for me. idk why"]]
+    private var comments = [["Steve Rogers": "What a pack!!"],["Tony Stark": "good good good good good good good good good good good good good good good good good good good good"],["Dr Bruce": "Hes lost fr"],["Clint Barton": "I got this pack. speed was okayish"],["Natasha Romarof": "Man! Everytime i browse google it slows down for me. idk why"]]
     
     // MARK: - Initialization
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        setupView()
         setupActions()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupUI()
+        setupView()
         setupActions()
     }
     
-    // MARK: - Setup UI
-    private func setupUI() {
+    // MARK: - Setup View
+    private func setupView() {
+        addSubview(countView)
         addSubview(buttonStackView)
         addSubview(commentTableView)
         addSubview(commentInputStackView)
-
+        
+        configureCountView()
         configureButtonStackView()
         configureCommentTableView()
         configureCommentInputStackView()
     }
     
-    private func createButton(imageName: String, title: String) -> UIButton {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: imageName), for: .normal)
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(.label, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.titleLabel?.adjustsFontSizeToFitWidth = true
-        button.contentHorizontalAlignment = .center
-        button.imageView?.contentMode = .scaleAspectFit
-        return button
+    private func configureCountView() {
+        NSLayoutConstraint.activate([
+            countView.topAnchor.constraint(equalTo: topAnchor),
+            countView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            countView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            countView.heightAnchor.constraint(equalToConstant: 30),
+        ])
     }
     
     private func configureButtonStackView() {
-        buttonStackView.addArrangedSubview(likeButton)
-        buttonStackView.addArrangedSubview(commentButton)
-        buttonStackView.addArrangedSubview(shareButton)
-        buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fillEqually
-        buttonStackView.alignment = .fill
-        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
-            buttonStackView.topAnchor.constraint(equalTo: topAnchor),
+            buttonStackView.topAnchor.constraint(equalTo: countView.bottomAnchor),
             buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             buttonStackView.heightAnchor.constraint(equalToConstant: 50),
@@ -134,9 +123,9 @@ public class CustomUIView: UIView {
     
     //MARK: Configure Actions
     private func setupActions() {
-        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-        commentButton.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
-        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+//        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
+//        commentButton.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
+//        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         commentSendButton.addTarget(self, action: #selector(sendComment), for: .touchUpInside)
     }
     

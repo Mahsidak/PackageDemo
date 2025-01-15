@@ -19,12 +19,12 @@ class CommentTableViewCell: UITableViewCell {
     //MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupUI()
+        setupView()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupUI()
+        setupView()
     }
     
     func configure(profileImage: UIImage?, profileName: String, commentText: String) {
@@ -33,8 +33,8 @@ class CommentTableViewCell: UITableViewCell {
         commentLabel.text = commentText
     }
     
-    //MARK: Setup UI
-    private func setupUI() {
+    //MARK: Setup View
+    private func setupView() {
         configureContentView()
         configureMainView()
         configureProfilePictureImageView()
