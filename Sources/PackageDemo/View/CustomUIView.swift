@@ -10,12 +10,10 @@ import UIKit
 @available(iOS 13.0, *)
 public class CustomUIView: UIView {
     // MARK: - UI Elements
+    private lazy var countView = CountView()
     private lazy var buttonStackView = LikeCommentShareStackView()
     private lazy var commentTableView: UITableView = UITableView()
-    private lazy var commentTextField = UITextField()
-    private lazy var commentSendButton: UIButton = UIButton()
-    private lazy var commentInputStackView = UIStackView()
-    private lazy var countView = CountView()
+    private lazy var commentInputStackView = CommentInputStackView()
     
     private var comments = [["Steve Rogers": "What a pack!!"],["Tony Stark": "good good good good good good good good good good good good good good good good good good good good"],["Dr Bruce": "Hes lost fr"],["Clint Barton": "I got this pack. speed was okayish"],["Natasha Romarof": "Man! Everytime i browse google it slows down for me. idk why"]]
     
@@ -23,13 +21,11 @@ public class CustomUIView: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
-        setupActions()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
-        setupActions()
     }
     
     // MARK: - Setup View
@@ -55,6 +51,7 @@ public class CustomUIView: UIView {
     }
     
     private func configureButtonStackView() {
+        buttonStackView.delegate = self
         NSLayoutConstraint.activate([
             buttonStackView.topAnchor.constraint(equalTo: countView.bottomAnchor),
             buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -78,30 +75,8 @@ public class CustomUIView: UIView {
         ])
     }
     
-    private func configureCommentTextField() {
-        commentTextField.placeholder = "Write a comment..."
-        commentTextField.borderStyle = .none
-        commentTextField.font = UIFont.systemFont(ofSize: 14)
-    }
-    
-    private func configureCommentSendButton() {
-        commentSendButton.setImage(UIImage(systemName: "paperplane"), for: .normal)
-        commentSendButton.tintColor = .systemBlue
-        commentSendButton.translatesAutoresizingMaskIntoConstraints = false
-        commentSendButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
     private func configureCommentInputStackView() {
-        configureCommentTextField()
-        configureCommentSendButton()
-        commentInputStackView.addArrangedSubview(commentTextField)
-        commentInputStackView.addArrangedSubview(commentSendButton)
-        commentInputStackView.axis = .horizontal
-        commentInputStackView.distribution = .fill
-        commentInputStackView.alignment = .fill
-        commentInputStackView.spacing = 5
-        commentInputStackView.translatesAutoresizingMaskIntoConstraints = false
-        
+        commentInputStackView.delegate = self
         NSLayoutConstraint.activate([
             commentInputStackView.heightAnchor.constraint(equalToConstant: 50),
             commentInputStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
@@ -119,37 +94,6 @@ public class CustomUIView: UIView {
             }
         }
         return nil
-    }
-    
-    //MARK: Configure Actions
-    private func setupActions() {
-//        likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
-//        commentButton.addTarget(self, action: #selector(commentButtonTapped), for: .touchUpInside)
-//        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
-        commentSendButton.addTarget(self, action: #selector(sendComment), for: .touchUpInside)
-    }
-    
-    @objc private func likeButtonTapped() {
-        print("Like button tapped")
-    }
-    
-    @objc private func commentButtonTapped() {
-        print("Comment button tapped")
-    }
-    
-    @objc private func shareButtonTapped() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let textToShare = "Share button tapped!"
-            let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
-            if let viewController = self.viewController() {
-                viewController.present(activityViewController, animated: true, completion: nil)
-            }
-        }
-    }
-    
-    @objc private func sendComment() {
-        
     }
 }
 
@@ -171,3 +115,26 @@ extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 }
+
+@available(iOS 13.0, *)
+extension CustomUIView: LikeCommentShareStackViewDelegate, CommentInputStackViewDelegate {
+    func didTapLike(_ stackView: LikeCommentShareStackView) {
+        print("Like Button tapped")
+    }
+    
+    func didTapComment(_ stackView: LikeCommentShareStackView) {
+        print("Comment Button tapped")
+    }
+    
+    func didTapShare(_ stackView: LikeCommentShareStackView) {
+        let textToShare = "Share button tapped!"
+        let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
+        if let viewController = self.viewController() {
+            viewController.present(activityViewController, animated: true, completion: nil)
+        }
+    }
+    
+    func didTapSendButton(_ commentInputStackView: CommentInputStackView, withText text: String?) {
+    }
+}
+
