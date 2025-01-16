@@ -53,7 +53,7 @@ class CommentTableViewCell: UITableViewCell {
         mainView.addSubview(profilePictureImageView)
         mainView.addSubview(commentHolderView)
         
-        mainView.backgroundColor = .systemBackground
+        mainView.backgroundColor = .clear
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.clipsToBounds = true
         
@@ -87,7 +87,7 @@ class CommentTableViewCell: UITableViewCell {
         commentHolderView.addSubview(commentLabel)
         
         commentHolderView.translatesAutoresizingMaskIntoConstraints = false
-        commentHolderView.backgroundColor = .systemGray3
+        commentHolderView.backgroundColor = .systemGray5
         commentHolderView.layer.cornerRadius = 10
         
         NSLayoutConstraint.activate([

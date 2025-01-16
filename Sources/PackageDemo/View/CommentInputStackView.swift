@@ -32,6 +32,7 @@ class CommentInputStackView: UIStackView {
         configureCommentSendButton()
         addArrangedSubview(commentTextField)
         addArrangedSubview(commentSendButton)
+        backgroundColor = .clear
         axis = .horizontal
         distribution = .fill
         alignment = .fill
@@ -42,6 +43,7 @@ class CommentInputStackView: UIStackView {
     private func configureCommentTextField() {
         commentTextField.placeholder = "Write a comment..."
         commentTextField.borderStyle = .none
+        commentTextField.tintColor = .red
         commentTextField.font = UIFont.systemFont(ofSize: 14)
     }
     

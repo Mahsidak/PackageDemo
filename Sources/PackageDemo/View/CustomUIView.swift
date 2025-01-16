@@ -116,6 +116,7 @@ extension CustomUIView: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - Button Actions
 @available(iOS 13.0, *)
 extension CustomUIView: LikeCommentShareStackViewDelegate, CommentInputStackViewDelegate {
     func didTapLike(_ stackView: LikeCommentShareStackView) {

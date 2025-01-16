@@ -45,7 +45,7 @@ class CountView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = text
-        label.textColor = .systemGray
+        label.textColor = .label
         label.numberOfLines = 1
         label.font = UIFont.systemFont(ofSize: 12)
         return label
