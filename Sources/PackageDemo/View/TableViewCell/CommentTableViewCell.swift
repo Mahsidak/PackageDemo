@@ -35,6 +35,7 @@ class CommentTableViewCell: UITableViewCell {
     
     //MARK: Setup View
     private func setupView() {
+        self.backgroundColor = .clear
         configureContentView()
         configureMainView()
         configureProfilePictureImageView()
@@ -52,7 +53,6 @@ class CommentTableViewCell: UITableViewCell {
     private func configureMainView() {
         mainView.addSubview(profilePictureImageView)
         mainView.addSubview(commentHolderView)
-        
         mainView.backgroundColor = .clear
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.clipsToBounds = true

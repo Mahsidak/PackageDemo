@@ -9,11 +9,11 @@
 import UIKit
 
 @MainActor
-class SDKInitializer {
+public class SDKInitializer {
     
     public static let shared = SDKInitializer()
     
-    public static func attachView(
+    public func attachView(
         to viewController: UIViewController,
         below targetView: UIView,
         withHeight height: CGFloat
@@ -24,11 +24,11 @@ class SDKInitializer {
         viewController.view.addSubview(customView)
 
         NSLayoutConstraint.activate([
-            customView.topAnchor.constraint(equalTo: targetView.bottomAnchor),
+            customView.topAnchor.constraint(equalTo: targetView.bottomAnchor, constant: 20),
             customView.leadingAnchor.constraint(equalTo: targetView.leadingAnchor),
             customView.trailingAnchor.constraint(equalTo: targetView.trailingAnchor),
             customView.bottomAnchor.constraint(lessThanOrEqualTo: viewController.view.safeAreaLayoutGuide.bottomAnchor),
-            customView.heightAnchor.constraint(equalToConstant: 500)
+            customView.heightAnchor.constraint(equalToConstant: 400)
         ])
         viewController.view.layoutIfNeeded()
     }

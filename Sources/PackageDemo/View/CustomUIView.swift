@@ -30,6 +30,8 @@ public class CustomUIView: UIView {
     
     // MARK: - Setup View
     private func setupView() {
+        backgroundColor = .systemBackground
+        layer.cornerRadius = 20
         addSubview(countView)
         addSubview(buttonStackView)
         addSubview(commentTableView)
